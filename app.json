@@ -3,7 +3,16 @@
   "description": "boilerplate for running servant + elm on heroku",
   "logo": "",
   "repository": "",
+  "buildpacks": [
+    {
+      "url": "https://github.com/mietek/haskell-on-heroku"
+    },
+    {
+      "url": "https://github.com/srid/heroku-buildpack-elm.git"
+    }
+  ],
   "env": {
+    "ELM_COMPILE": "elm make frontend/Main.elm --output static/app.js",
     "BUILDPACK_URL": {
       "description": "Heroku buildpack for deploying Haskell apps",
       "value": "https://github.com/mietek/haskell-on-heroku"

@@ -33,17 +33,17 @@ getCats cats =
     liftIO $ readTVarIO cats
 
 type MyAPI =
-         Get Text
-    :<|> "cats" :> Get [Cat]
+    "cats" :> Get [Cat]
+    :<|> Raw
 
 myAPI :: Proxy MyAPI
 myAPI =
     Proxy
 
 server :: Text -> TVar [Cat] -> Server MyAPI
-server home cats =
-         return home
-    :<|> getCats cats
+server cats =
+    getCats cats
+    :<|> serveDirectory "static/"
 
 
 main :: IO ()
@@ -51,7 +51,5 @@ main = do
     hSetBuffering stdout LineBuffering
     env <- getEnvironment
     let port = maybe 8080 read $ lookup "PORT" env
-        home = maybe "Welcome to Haskell on Heroku" T.pack $
-                 lookup "TUTORIAL_HOME" env
     cats <- staticCats
-    run port $ serve myAPI $ server home cats
+    run port $ serve myAPI $ server cats
