@@ -1,12 +1,11 @@
 module Model exposing (..)
 
-import Message exposing (Msg(..))
+import Http
+
+
+type alias Cat =
+    { name : String }
 
 
 type alias Model =
-    String
-
-
-init : Maybe Model -> ( Model, Cmd Msg )
-init m =
-    ( "", Cmd.none )
+    { cats : List Cat }
