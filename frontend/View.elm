@@ -8,7 +8,9 @@ import Message exposing (Msg)
 view : Model -> Html Msg
 view model =
     div []
-        [ ul []
+        [ h1 [] [ text "servant-elm-poc" ]
+        , p [] [ text "The API returned the following cats:" ]
+        , ul []
             (List.map
                 catLi
                 model.cats
