@@ -1,4 +1,6 @@
-all: app.js styles.css
+all: elm
+
+elm: app.js styles.css
 
 app.js: frontend/*.elm
 	elm-make frontend/Main.elm --output static/app.js

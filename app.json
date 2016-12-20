@@ -12,7 +12,7 @@
     }
   ],
   "env": {
-    "ELM_COMPILE": "elm make frontend/Main.elm --output static/app.js",
+    "ELM_COMPILE": "make elm",
     "BUILDPACK_URL": {
       "description": "Heroku buildpack for deploying Haskell apps",
       "value": "https://github.com/mietek/haskell-on-heroku"
