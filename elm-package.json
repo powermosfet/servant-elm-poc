@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Boilerplate for heroku app with servant + elm",
-    "repository": "git@github.com:powermosfet/servant-elm-poc.git",
+    "repository": "https://github.com/powermosfet/servant-elm-poc.git",
     "license": "BSD3",
     "source-directories": [
         "frontend/"
