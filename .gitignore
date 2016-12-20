@@ -1,3 +1,6 @@
 .cabal-sandbox
 cabal.sandbox.config
 dist
+elm-stuff
+static/app.js
+static/styles.css
