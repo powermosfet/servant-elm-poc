@@ -9,4 +9,4 @@ styles.css: frontend/styles/*.elm
 	elm-css frontend/styles/stylesheet.elm --output static/
 
 clean:
-	rm static/app.js static/styles.css
+	rm -R static/app.js static/styles.css node_modules/ elm-stuff/
