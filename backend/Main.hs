@@ -40,7 +40,7 @@ myAPI :: Proxy MyAPI
 myAPI =
     Proxy
 
-server :: Text -> TVar [Cat] -> Server MyAPI
+server :: TVar [Cat] -> Server MyAPI
 server cats =
     getCats cats
     :<|> serveDirectory "static/"
