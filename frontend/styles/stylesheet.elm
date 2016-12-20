@@ -1,7 +1,7 @@
 port module Stylesheets exposing (..)
 
 import Css.File exposing (CssFileStructure, CssCompilerProgram)
-import Styles.Styles as Styles
+import Styles
 
 
 port files : CssFileStructure -> Cmd msg
