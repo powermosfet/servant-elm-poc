@@ -26,6 +26,9 @@ staticCats :: IO (TVar [Cat])
 staticCats =
     newTVarIO [ Cat {name="Felix"}
               , Cat {name="Bolivar"}
+              , Cat {name="Einstein"}
+              , Cat {name="Marvel"}
+              , Cat {name="Bill"}
               ]
 
 getCats :: MonadIO m => TVar [Cat] -> m [Cat]
