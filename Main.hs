@@ -13,8 +13,8 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
 
-newtype Note = Note
-    { contents :: Text
+newtype Cat = Cat
+    { name :: Text
     }
   deriving (Generic, Show)
 
@@ -22,39 +22,26 @@ instance FromJSON Note
 instance ToJSON Note
 
 
-emptyNotes :: IO (TVar [Note])
-emptyNotes =
+staticCats :: IO (TVar [Cat])
+staticCats =
     newTVarIO []
 
-getNotes :: MonadIO m => TVar [Note] -> m [Note]
-getNotes notes =
-    liftIO $ readTVarIO notes
+getCats :: MonadIO m => TVar [Cat] -> m [Cat]
+getCats cats =
+    liftIO $ readTVarIO cats
 
-postNote :: MonadIO m => TVar [Note] -> Note -> m [Note]
-postNote notes note =
-    liftIO $ do
-      T.putStrLn $ contents note
-      atomically $ do
-        oldNotes <- readTVar notes
-        let newNotes = note : oldNotes
-        writeTVar notes newNotes
-        return newNotes
-
-
-type NoteAPI =
+type MyAPI =
          Get Text
-    :<|> "notes" :> Get [Note]
-    :<|> "notes" :> ReqBody Note :> Post [Note]
+    :<|> "cats" :> Get [Cat]
 
-noteAPI :: Proxy NoteAPI
-noteAPI =
+myAPI :: Proxy MyAPI
+myAPI =
     Proxy
 
-server :: Text -> TVar [Note] -> Server NoteAPI
-server home notes =
+server :: Text -> TVar [Cat] -> Server MyAPI
+server home cats =
          return home
-    :<|> getNotes notes
-    :<|> postNote notes
+    :<|> getCats cats
 
 
 main :: IO ()
@@ -64,5 +51,5 @@ main = do
     let port = maybe 8080 read $ lookup "PORT" env
         home = maybe "Welcome to Haskell on Heroku" T.pack $
                  lookup "TUTORIAL_HOME" env
-    notes <- emptyNotes
-    run port $ serve noteAPI $ server home notes
+    cats <- staticCats
+    run port $ serve myAPI $ server home cats

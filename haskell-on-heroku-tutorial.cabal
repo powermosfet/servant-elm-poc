@@ -1,9 +1,9 @@
-name:               haskell-on-heroku-tutorial
+name:               servant-elm-poc
 version:            1.0
 build-type:         Simple
 cabal-version:      >= 1.20
 
-executable haskell-on-heroku-tutorial
+executable servant-elm-poc
   main-is:            Main.hs
   default-language:   Haskell2010
   default-extensions: DataKinds,
