@@ -18,13 +18,15 @@ newtype Cat = Cat
     }
   deriving (Generic, Show)
 
-instance FromJSON Note
-instance ToJSON Note
+instance FromJSON Cat
+instance ToJSON Cat
 
 
 staticCats :: IO (TVar [Cat])
 staticCats =
-    newTVarIO []
+    newTVarIO [ Cat {name="Felix"}
+              , Cat {name="Bolivar"}
+              ]
 
 getCats :: MonadIO m => TVar [Cat] -> m [Cat]
 getCats cats =
