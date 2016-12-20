@@ -1,6 +1,6 @@
 module View exposing (..)
 
-import Html exposing (Html, div, ul, li, text)
+import Html exposing (Html, div, h1, p, ul, li, text)
 import Model exposing (Model, Cat)
 import Message exposing (Msg)
 
