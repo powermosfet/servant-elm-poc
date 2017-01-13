@@ -36,7 +36,7 @@ getCats cats =
     liftIO $ readTVarIO cats
 
 type MyAPI =
-    "cats" :> Get [Cat]
+    "cats" :> Get '[JSON] [Cat]
     :<|> Raw
 
 myAPI :: Proxy MyAPI
