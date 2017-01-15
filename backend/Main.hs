@@ -47,7 +47,7 @@ server :: TVar [Cat] -> Server MyAPI
 server cats =
     getCats cats
     :<|> serveDirectory "static/"
-
+ 
 main :: IO ()
 main = do
     hSetBuffering stdout LineBuffering
