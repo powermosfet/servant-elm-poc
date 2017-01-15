@@ -5,9 +5,6 @@
   "repository": "",
   "buildpacks": [
     {
-      "url": "https://github.com/mietek/haskell-on-heroku"
-    },
-    {
       "url": "https://github.com/srid/heroku-buildpack-elm.git"
     },
     {
@@ -16,14 +13,5 @@
   ],
   "env": {
     "ELM_COMPILE": "make clean elm",
-    "BUILDPACK_URL": {
-      "description": "Heroku buildpack for deploying Haskell apps",
-      "value": "https://github.com/mietek/haskell-on-heroku"
-    },
-    "TUTORIAL_HOME": {
-      "description": "Welcome message",
-      "required": false,
-      "value": "Welcome to Haskell on Heroku"
-    }
   }
 }
