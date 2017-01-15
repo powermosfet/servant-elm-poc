@@ -9,10 +9,13 @@
     },
     {
       "url": "https://github.com/srid/heroku-buildpack-elm.git"
+    },
+    {
+      "url": "https://github.com/mfine/heroku-buildpack-stack"
     }
   ],
   "env": {
-    "ELM_COMPILE": "make elm",
+    "ELM_COMPILE": "make clean; make elm",
     "BUILDPACK_URL": {
       "description": "Heroku buildpack for deploying Haskell apps",
       "value": "https://github.com/mietek/haskell-on-heroku"
