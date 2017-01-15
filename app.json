@@ -12,6 +12,6 @@
     }
   ],
   "env": {
-    "ELM_COMPILE": "make clean elm",
+    "ELM_COMPILE": "make clean elm"
   }
 }
