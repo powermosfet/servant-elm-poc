@@ -3,7 +3,7 @@ all: elm
 elm: app.js styles.css
 
 app.js: frontend/*.elm
-	elm-make frontend/Main.elm --output static/app.js
+	elm-make frontend/Main.elm --yes --output static/app.js
 
 styles.css: frontend/Styles/*.elm
 	elm-css frontend/Styles/stylesheet.elm --output static/
