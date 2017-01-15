@@ -5,6 +5,6 @@ import Message exposing (Msg)
 import Command exposing (getCats)
 
 
-init : Maybe Model -> ( Model, Cmd Msg )
-init m =
+init : ( Model, Cmd Msg )
+init =
     ( { cats = [] }, getCats )
