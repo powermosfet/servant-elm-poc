@@ -11,12 +11,20 @@ executable servant-elm-poc
                       OverloadedStrings,
                       TypeFamilies,
                       TypeOperators
-  ghc-options:        -O2 -Wall -threaded
+  ghc-options:        -O2 -Wall -threaded -ibackend
   build-depends:      base,
                       aeson,
                       servant,
                       servant-server,
+                      persistent,
+                      persistent-template,
+                      persistent-sqlite,
+                      persistent-postgresql,
+                      regex-posix,
+                      string-conversions,
+                      monad-logger,
                       stm,
                       text,
                       transformers,
+                      wai,
                       warp

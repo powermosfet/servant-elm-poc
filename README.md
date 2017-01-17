@@ -5,6 +5,5 @@ A boilerplate repo for running servant + elm on heroku
 
 #Heroku setup:
 
-    $ heroku buildpacks:set https://github.com/mietek/haskell-on-heroku
-    $ heroku buildpacks:add --index 2 https://github.com/heroku/heroku-buildpack-nodejs
-    $ heroku buildpacks:add --index 3 https://github.com/srid/heroku-buildpack-elm
+    $ heroku buildpacks:set https://github.com/srid/heroku-buildpack-elm
+    $ heroku buildpacks:add --index 2 https://github.com/mfine/heroku-buildpack-stack
