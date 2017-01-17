@@ -49,7 +49,7 @@ fromEnvironment env =
         dbConfig = fromMaybe defaultDb
                     $ parseDbUrl
                     $ fromMaybe ""
-                    $ lookup "PORT" env
+                    $ lookup "DATABASE_URL" env
     in
         Config 
             { getServerPort = port
