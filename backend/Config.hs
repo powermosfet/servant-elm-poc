@@ -38,7 +38,7 @@ defaultDb = DbConfig
     , getPassword = ""
     , getHost     = ""
     , getPort     = 0
-    , getDatabase = "database.db"
+    , getDatabase = ":memory:"
     }
 
 fromEnvironment :: [(String, String)] -> Config
