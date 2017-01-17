@@ -63,6 +63,7 @@ makeDbPool cfg =
 
         pool = case getProtocol dbConfig of
             Sqlite -> createSqlitePool (cs $ getDatabase dbConfig) 5
+            Postgres -> createPostgresqlPool (toConnectionString dbConfig) 5 
     in
         runStderrLoggingT pool
 
@@ -103,3 +104,30 @@ parseDbUrl url =
             _ -> Nothing
         in
             sqliteConfig <|> dbConfig
+
+toConnectionString :: DbConfig -> ConnectionString
+toConnectionString DbConfig
+    { getProtocol = _
+    , getUser     = user
+    , getPassword = pass
+    , getHost     = host
+    , getPort     = port
+    , getDatabase = database
+    }
+    = 
+    let
+        fields = [ "host="
+                 , "port="
+                 , "user="
+                 , "password="
+                 , "dbname="
+                 ]
+        values = [ host
+                 , show port
+                 , user
+                 , pass
+                 , database
+                 ]
+    in
+        unwords $ zipWith (++) fields values
+    
