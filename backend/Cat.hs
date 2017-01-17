@@ -7,11 +7,7 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Cat 
-  ( Cat
-  , CatId
-  , migrateCats
-  ) where
+module Cat where
 
 -- import Database.Persist
 import Database.Persist.TH

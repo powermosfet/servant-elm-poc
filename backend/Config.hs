@@ -69,8 +69,8 @@ makeDbPool cfg =
 parseDbUrl :: String -> Maybe DbConfig
 parseDbUrl url =
     let 
-        capitalize (c:cs) = toUpper c:cs
-        capitalize cs = cs
+        capitalize (c:s) = toUpper c:s
+        capitalize s = s
         
         sqliteResult = url =~ ("^sqlite://(.+)$" :: String) :: (String, String, String, [String])
 

@@ -25,21 +25,30 @@ getCats pool = flip runSqlPersistMPool pool $ do
     entUsers <- selectList [] []
     return $ entityVal <$> entUsers
 
-type MyAPI =
-    "cats" :> Get '[JSON] [Cat]
-    :<|> Raw
+postCat :: ConnectionPool -> Cat -> IO (Maybe (Key Cat))
+postCat pool cat = flip runSqlPersistMPool pool $ do
+    exists <- selectFirst [CatName ==. catName cat] []
+    case exists of
+        Nothing -> Just <$> insert cat
+        Just _ -> return Nothing
+
+type MyAPI = "cats" :> Get '[JSON] [Cat]
+        :<|> "cats" :> ReqBody '[JSON] Cat :> Post '[JSON] (Maybe (Key Cat))
+        :<|> Raw
 
 myAPI :: Proxy MyAPI
 myAPI =
     Proxy
 
 server :: ConnectionPool -> Server MyAPI
-server pool =
-    getCatsH
-    :<|> serveDirectory "static/"
+server pool = getCatsH
+         :<|> postCatH
+         :<|> serveDirectory "static/"
  
     where
       getCatsH = liftIO (getCats pool)
+
+      postCatH cat = liftIO (postCat pool cat)
 
 mkApp :: Config -> IO Application
 mkApp cfg = do
