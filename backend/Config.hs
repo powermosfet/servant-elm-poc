@@ -1,118 +1,92 @@
-module Config
-    ( Config(..)
-    , DbConfig(..)
-    , fromEnvironment
-    , makeDbPool
-    ) where
+module Config where
 
-import Text.Regex.Posix
-import Control.Applicative
+import qualified Data.ByteString.Char8 as BS
 import Data.Maybe
 import Database.Persist.Sqlite
+import Database.Persist.Postgresql
 import Data.String.Conversions
 import Control.Monad.Logger (runStderrLoggingT)
-import Data.Char (toUpper)
+import Text.ParserCombinators.Parsec
+import Text.Parsec.Prim (ParsecT)
+import Data.Functor.Identity (Identity)
 
-data Protocol
-    = Sqlite
-    | Postgres
-    deriving (Show, Read, Eq)
-
-data DbConfig = DbConfig
-    { getProtocol :: Protocol
-    , getUser :: String
-    , getPassword :: String
-    , getHost :: String
-    , getPort :: Int
-    , getDatabase :: String
-    }
+data DbConfig 
+    = PostgresqlConfig
+        { postgresqlUser :: String
+        , postgresqlPassword :: String
+        , postgresqlHost :: String
+        , postgresqlPort :: Int
+        , postgresqlDatabase :: String
+        }
+    | SqliteConfig String 
+    deriving (Show)
 
 data Config = Config 
-    { getServerPort :: Int
-    , getDbConfig :: DbConfig
+    { configServerPort :: Int
+    , configDbConfig :: DbConfig
     }
+    deriving (Show)
 
-defaultDb = DbConfig 
-    { getProtocol = Sqlite
-    , getUser     = ""
-    , getPassword = ""
-    , getHost     = ""
-    , getPort     = 0
-    , getDatabase = ":memory:"
-    }
+defaultDb :: DbConfig
+defaultDb = SqliteConfig ":memory:"
 
 fromEnvironment :: [(String, String)] -> Config
 fromEnvironment env = 
     let
         port = read $ fromMaybe "8080" $ lookup "PORT" env
 
-        dbConfig = fromMaybe defaultDb
-                    $ parseDbUrl
+        dbConfig = either (const defaultDb) id
+                    $ parse parseDbUrl "ParseUrl"
                     $ fromMaybe ""
                     $ lookup "DATABASE_URL" env
     in
         Config 
-            { getServerPort = port
-            , getDbConfig = dbConfig
+            { configServerPort = port
+            , configDbConfig = dbConfig
             }
 
 makeDbPool :: Config -> IO ConnectionPool
 makeDbPool cfg =
     let
-        dbConfig = getDbConfig cfg
+        dbConfig = configDbConfig cfg
 
-        pool = case getProtocol dbConfig of
-            Sqlite -> createSqlitePool (cs $ getDatabase dbConfig) 5
-            Postgres -> createPostgresqlPool (toConnectionString dbConfig) 5 
+        pool = case dbConfig of
+            SqliteConfig filename -> createSqlitePool (cs filename) 5
+            PostgresqlConfig {} -> createPostgresqlPool (toConnectionString dbConfig) 5 
     in
         runStderrLoggingT pool
 
-parseDbUrl :: String -> Maybe DbConfig
-parseDbUrl url =
-    let 
-        capitalize (c:s) = toUpper c:s
-        capitalize s = s
-        
-        sqliteResult = url =~ ("^sqlite://(.+)$" :: String) :: (String, String, String, [String])
 
-        sqliteConfig = case sqliteResult of
-            (_, _, _, filename:_) ->
-                Just DbConfig 
-                    { getProtocol = Sqlite
-                    , getUser     = ""
-                    , getPassword = ""
-                    , getHost     = ""
-                    , getPort     = 0
-                    , getDatabase = filename
-                    }
+parseDbUrl :: ParsecT String () Identity DbConfig
+parseDbUrl = try sqliteUrl <|> postgresqlUrl
 
-            _ -> Nothing
+sqliteUrl :: ParsecT String () Identity DbConfig
+sqliteUrl = do
+    _ <- string "sqlite://" 
+    filename <- many anyChar 
+    return $ SqliteConfig filename
 
-        result = url =~ ("^([a-z]+)://([^:]+):([^@]+)@([^:]+):([^/]+)/([^/]+)$" :: String) :: (String, String, String, [String])
-        
-        dbConfig = case result of
-            (_, _, _, protocol:user:password:host:port:database:_) ->
-                Just DbConfig 
-                    { getProtocol = read $ capitalize protocol
-                    , getUser     = user
-                    , getPassword = password
-                    , getHost     = host
-                    , getPort     = read port
-                    , getDatabase = database
-                    }
-
-            _ -> Nothing
-        in
-            sqliteConfig <|> dbConfig
+postgresqlUrl :: ParsecT String () Identity DbConfig
+postgresqlUrl = do
+    _ <- string "postgres://" 
+    user <- many (noneOf ":")  
+    _ <- char ':'
+    password <- many (noneOf "@")
+    _ <- char '@'
+    host <- many (noneOf ":")
+    _ <- char ':'
+    port <- many digit
+    _ <- char '/'
+    database <- many anyChar
+    return $ PostgresqlConfig user password host (read port) database
 
 toConnectionString :: DbConfig -> ConnectionString
-toConnectionString DbConfig
-    { getProtocol = _
-    , getUser     = user
-    , getPassword = pass
-    , getHost     = host
-    , getPort     = port
-    , getDatabase = database
+toConnectionString PostgresqlConfig
+    { postgresqlUser     = user
+    , postgresqlPassword = pass
+    , postgresqlHost     = host
+    , postgresqlPort     = port
+    , postgresqlDatabase = database
     }
     = 
     let
@@ -129,5 +103,5 @@ toConnectionString DbConfig
                  , database
                  ]
     in
-        unwords $ zipWith (++) fields values
+        BS.pack $ unwords $ zipWith (++) fields values
     

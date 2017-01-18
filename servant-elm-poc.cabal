@@ -13,6 +13,7 @@ executable servant-elm-poc
                       TypeOperators
   ghc-options:        -O2 -Wall -threaded -ibackend
   build-depends:      base,
+                      bytestring,
                       aeson,
                       servant,
                       servant-server,
@@ -20,7 +21,7 @@ executable servant-elm-poc
                       persistent-template,
                       persistent-sqlite,
                       persistent-postgresql,
-                      regex-posix,
+                      parsec,
                       string-conversions,
                       monad-logger,
                       stm,

@@ -75,7 +75,5 @@ main = do
     hSetBuffering stdout LineBuffering
     env <- getEnvironment
     let config = fromEnvironment env 
-    let port = getServerPort config
+    let port = configServerPort config
     run port =<< mkApp config
-    --runSqlite ":memory:" $ do
-    --    runMigration migrateAll
