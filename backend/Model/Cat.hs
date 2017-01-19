@@ -7,9 +7,9 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Cat where
+module Model.Cat where
 
--- import Database.Persist
+import Database.Persist.Sql
 import Database.Persist.TH
 import Data.Aeson
 
@@ -27,3 +27,15 @@ instance FromJSON Cat where
 instance ToJSON Cat where
   toJSON (Cat name) =
     object [ "name" .= name ]
+
+getCats :: ConnectionPool -> IO [Cat]
+getCats pool = flip runSqlPersistMPool pool $ do
+    entUsers <- selectList [] []
+    return $ entityVal <$> entUsers
+
+postCat :: ConnectionPool -> Cat -> IO (Maybe (Key Cat))
+postCat pool cat = flip runSqlPersistMPool pool $ do
+    exists <- selectFirst [CatName ==. catName cat] []
+    case exists of
+        Nothing -> Just <$> insert cat
+        Just _ -> return Nothing
