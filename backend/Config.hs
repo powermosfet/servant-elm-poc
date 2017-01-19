@@ -6,20 +6,9 @@ import Database.Persist.Sqlite
 import Database.Persist.Postgresql
 import Data.String.Conversions
 import Control.Monad.Logger (runStderrLoggingT)
-import Text.ParserCombinators.Parsec
-import Text.Parsec.Prim (ParsecT)
-import Data.Functor.Identity (Identity)
 
-data DbConfig 
-    = PostgresqlConfig
-        { postgresqlUser :: String
-        , postgresqlPassword :: String
-        , postgresqlHost :: String
-        , postgresqlPort :: Int
-        , postgresqlDatabase :: String
-        }
-    | SqliteConfig String 
-    deriving (Show)
+import DbConfig
+import DbUrl
 
 data Config = Config 
     { configServerPort :: Int
@@ -36,7 +25,7 @@ fromEnvironment env =
         port = read $ fromMaybe "8080" $ lookup "PORT" env
 
         dbConfig = either (const defaultDb) id
-                    $ parse parseDbUrl "ParseUrl"
+                    $ parseDbUrl
                     $ fromMaybe ""
                     $ lookup "DATABASE_URL" env
     in
@@ -56,29 +45,6 @@ makeDbPool cfg =
     in
         runStderrLoggingT pool
 
-
-parseDbUrl :: ParsecT String () Identity DbConfig
-parseDbUrl = try sqliteUrl <|> postgresqlUrl
-
-sqliteUrl :: ParsecT String () Identity DbConfig
-sqliteUrl = do
-    _ <- string "sqlite://" 
-    filename <- many anyChar 
-    return $ SqliteConfig filename
-
-postgresqlUrl :: ParsecT String () Identity DbConfig
-postgresqlUrl = do
-    _ <- string "postgres://" 
-    user <- many (noneOf ":")  
-    _ <- char ':'
-    password <- many (noneOf "@")
-    _ <- char '@'
-    host <- many (noneOf ":")
-    _ <- char ':'
-    port <- many digit
-    _ <- char '/'
-    database <- many anyChar
-    return $ PostgresqlConfig user password host (read port) database
 
 toConnectionString :: DbConfig -> ConnectionString
 toConnectionString PostgresqlConfig
@@ -104,4 +70,5 @@ toConnectionString PostgresqlConfig
                  ]
     in
         BS.pack $ unwords $ zipWith (++) fields values
+toConnectionString _ = ""
     
