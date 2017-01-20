@@ -8,7 +8,7 @@ import Network.Wai
 import Model.Cat
 import Config
 
-type MyAPI = "cats" :> Get '[JSON] [Cat]
+type MyAPI = "cats" :> Get '[JSON] [Entity Cat]
         :<|> "cats" :> ReqBody '[JSON] Cat :> Post '[JSON] (Maybe (Key Cat))
         :<|> Raw
 
