@@ -12,13 +12,27 @@ module Model.Cat where
 
 import Database.Persist.Sql
 import Database.Persist.TH
+import Data.Aeson
 
 share [mkPersist sqlSettings, mkMigrate "migrateCats"] [persistLowerCase|
-Cat json
+Cat 
     name String
     UniqueName name
     deriving Show
 |]
+
+instance FromJSON Cat where
+    parseJSON = withObject "Cat" $ \ v ->
+        Cat <$> v .: "name"
+
+instance ToJSON (Entity Cat) where
+    toJSON (Entity id (Cat name)) =
+        object
+          [ "data" .= object [ "name" .= name ]
+          , "links" .= object
+              [ "self" .= ("/cat/" ++ show id)
+              ]
+          ]
 
 getCats :: ConnectionPool -> IO [Entity Cat]
 getCats pool = flip runSqlPersistMPool pool $ selectList [] []
