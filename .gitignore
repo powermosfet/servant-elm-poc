@@ -8,3 +8,5 @@ node_modules
 .stack-work/
 *.log
 *.db
+*.db-shm
+*.db-wal
