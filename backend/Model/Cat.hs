@@ -26,11 +26,11 @@ instance FromJSON Cat where
         Cat <$> v .: "name"
 
 instance ToJSON (Entity Cat) where
-    toJSON (Entity id (Cat name)) =
+    toJSON (Entity key (Cat name)) =
         object
           [ "data" .= object [ "name" .= name ]
           , "links" .= object
-              [ "self" .= ("/cat/" ++ show id)
+              [ "self" .= ("/cat/" ++ show (fromSqlKey key))
               ]
           ]
 
